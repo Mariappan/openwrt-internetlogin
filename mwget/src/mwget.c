@@ -73,11 +73,12 @@ int main (int argc, char **argv)
 {
     int sock = -1, yes;
     int recv_len, size;
+    int i, index;
     char ch, *buf = NULL, *tmpbuf = NULL;
-    char *unknown_arg = "Unknown Arg";
+    char *next, *unknown_arg = "Unknown Arg";
     struct sockaddr_in serv_addr;
 
-    while ((ch = getopt(argc, argv, "h:p:l:")) != -1) {
+    while ((ch = getopt(argc, argv, "h:p:d:l:")) != -1) {
         switch(ch) {
         case 'l':
             index = optind-1;
@@ -87,7 +88,10 @@ int main (int argc, char **argv)
                 if(next[0] != '-'){         /* check if optarg is next switch */
                     http_header[hcount++] = next;
                 }
-                else break;
+                else {
+                    optind = index - 1;
+                    break;
+                }
             }
             break;
         case 'h':
