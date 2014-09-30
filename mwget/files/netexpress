@@ -1,0 +1,25 @@
+logfile=/tmp/cronlog
+
+# If there is no IP for eth1 ; don't proceed
+if [ -z $(ifconfig eth1 | grep Bcast | awk '{print $2}' | tr -d 'a-z,:') ]; then
+    exit 2
+fi
+
+# If ping result not equal to 100, it means Connection is there
+pingResult=$(ping www.google.com -c 2 -q | grep -o '[0-9]*%')
+if [ "$pingResult" != '100%' ]; then
+	exit 2
+fi
+
+echo `date` Trying to connect >> $logfile
+mydata=$(mwget 1.254.254.254 2>/dev/null | awk -F '?' '/URL=/{ print $2; }' | tr -d '">')
+
+#echo "================redirectID======================="
+myredirectID=$(mwget 103.24.174.13 m GET u /userportal/ d "$mydata" | grep 'JSESSIONID')
+
+#echo "================jSessionID======================="
+mySessionID=$(echo $myredirectID | awk '{ print $2; }' | tr -d ';')
+echo $mySessionID >> $logfile
+
+mwget 103.24.174.13 m POST u "/userportal/newlogin.do?phone=0" d "type=2&username=<user>&password=<pass>" h "Cookie: $mySessionID" >/dev/null 2>/dev/null
+echo Connected >> $logfile

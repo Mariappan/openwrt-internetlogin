@@ -52,6 +52,7 @@ endef
 define Build/Prepare
 	mkdir -p $(PKG_BUILD_DIR)
 	$(CP) ./src/* $(PKG_BUILD_DIR)/
+	$(CP) ./files/* $(PKG_BUILD_DIR)/
 endef
 
 # We do not need to define Build/Configure or Build/Compile directives
@@ -66,6 +67,7 @@ endef
 define Package/mwget/install
 	$(INSTALL_DIR) $(1)/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/mwget $(1)/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/netexpress $(1)/bin/
 endef
 
 # This line executes the necessary commands to compile our program.
